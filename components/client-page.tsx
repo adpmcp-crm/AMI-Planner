@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { translations, Language } from '@/lib/translations';
 import { PartnersSection } from '@/components/Partners';
 
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+// Remove top level instantiation
+// const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
 type Tab = 'home' | 'about' | 'budget' | 'growth' | 'start';
 type FocusType = 'media' | 'sound';
@@ -142,6 +143,12 @@ export function ClientPage() {
     };
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key is missing. Please set NEXT_PUBLIC_GEMINI_API_KEY.");
+      }
+      const ai = new GoogleGenAI({ apiKey });
+
       const prompt = `Você é um planejador e consultor especialista em Mídia e Audiovisual para Igrejas (AMI Planner).
 Baseado nestes dados:
 - Igreja: ${promptData.churchName}
@@ -197,6 +204,12 @@ Retorne apenas este formato JSON (valido):
     setGrowthResult(null);
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key is missing. Please set NEXT_PUBLIC_GEMINI_API_KEY.");
+      }
+      const ai = new GoogleGenAI({ apiKey });
+
       const prompt = `Atue como Especialista de Crescimento Digital para Igrejas (AMI Manager). Você precisa analisar de forma consultiva a estratégia para o link social: ${socialLink}. Crie soluções reais. IDIOMA DA RESPOSTA: ${lang.toUpperCase()}.
 
 Retorne EXATAMENTE este JSON:
