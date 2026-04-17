@@ -6,8 +6,6 @@ import { Loader2, TrendingUp, DollarSign, Download, PlayCircle, Home, Instagram,
 import { motion, AnimatePresence } from 'motion/react';
 import { translations, Language } from '@/lib/translations';
 import { PartnersSection } from '@/components/Partners';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
@@ -50,14 +48,15 @@ export function ClientPage() {
   const [churchName, setChurchName] = useState('');
   const [members, setMembers] = useState('');
   const [growth, setGrowth] = useState('growthModerate');
-  const [currentLevel, setCurrentLevel] = useState('');
+  const [currentLevel, setCurrentLevel] = useState('mediaLevel1');
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('locBR');
 
-  // Set default level when focus changes
-  React.useEffect(() => {
-    setCurrentLevel(focus === 'media' ? 'mediaLevel1' : 'soundLevel1');
-  }, [focus]);
+  // Change focus handler
+  const handleFocusChange = (newFocus: FocusType) => {
+    setFocus(newFocus);
+    setCurrentLevel(newFocus === 'media' ? 'mediaLevel1' : 'soundLevel1');
+  };
 
   // Growth State
   const [socialLink, setSocialLink] = useState('');
@@ -65,10 +64,13 @@ export function ClientPage() {
 
   // Generates PDF
   const handleDownloadPDF = async (elementId: string, filename: string, instName?: string) => {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    
     try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      
       const canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -500,7 +502,7 @@ Retorne EXATAMENTE este JSON:
 
                   <div>
                     <label className="text-[11px] uppercase tracking-wider text-[#6b7280] font-bold block mb-1.5">{t.focus}</label>
-                    <select value={focus} onChange={e=>setFocus(e.target.value as FocusType)} className="w-full bg-[#f9fafb] border border-[#e5e7eb] px-4 py-2.5 rounded-xl text-sm font-medium focus:border-[#db7b35] focus:outline-none">
+                    <select value={focus} onChange={e=>handleFocusChange(e.target.value as FocusType)} className="w-full bg-[#f9fafb] border border-[#e5e7eb] px-4 py-2.5 rounded-xl text-sm font-medium focus:border-[#db7b35] focus:outline-none">
                       <option value="media">{t.focusMedia}</option>
                       <option value="sound">{t.focusSound}</option>
                     </select>
