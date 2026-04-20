@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'EcclesiaMedia AI',
+  title: 'AMI Planner',
   description: 'AI-powered media budgeting platform',
 };
 

@@ -177,19 +177,30 @@ Retorne apenas este formato JSON (valido):
 }`;
 
       const response = await ai.models.generateContent({
-        model: 'models/gemini-3.1-pro-preview',
+        model: 'gemini-3.1-pro-preview',
         contents: prompt,
+        config: {
+          responseMimeType: "application/json"
+        }
       });
 
       let jsonStr = response.text || "{}";
-      if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json\n?/, '');
-      if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```\n?/, '');
-      jsonStr = jsonStr.replace(/```$/, '').trim();
-
-      setBudgetResult(JSON.parse(jsonStr));
-    } catch (error) {
+      const jsonMatch = jsonStr.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch) {
+         jsonStr = jsonMatch[1];
+      } else {
+         const generalMatch = jsonStr.match(/```\n([\s\S]*?)\n```/);
+         if (generalMatch) jsonStr = generalMatch[1];
+      }
+      
+      try {
+        setBudgetResult(JSON.parse(jsonStr));
+      } catch (parseErr: any) {
+        throw new Error(`JSON parsing failed: ${parseErr.message}. Output was: ${response.text?.substring(0,100)}...`);
+      }
+    } catch (error: any) {
       console.error(error);
-      setErrorMsg("Error generating format. Please try again.");
+      setErrorMsg(`Error generating format: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -224,19 +235,30 @@ Retorne EXATAMENTE este JSON:
 }`;
 
       const response = await ai.models.generateContent({
-        model: 'models/gemini-3.1-pro-preview',
+        model: 'gemini-3.1-pro-preview',
         contents: prompt,
+        config: {
+          responseMimeType: "application/json"
+        }
       });
 
       let jsonStr = response.text || "{}";
-      if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json\n?/, '');
-      if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```\n?/, '');
-      jsonStr = jsonStr.replace(/```$/, '').trim();
-
-      setGrowthResult(JSON.parse(jsonStr));
-    } catch (error) {
+      const jsonMatch = jsonStr.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch) {
+         jsonStr = jsonMatch[1];
+      } else {
+         const generalMatch = jsonStr.match(/```\n([\s\S]*?)\n```/);
+         if (generalMatch) jsonStr = generalMatch[1];
+      }
+      
+      try {
+        setGrowthResult(JSON.parse(jsonStr));
+      } catch (parseErr: any) {
+        throw new Error(`JSON parsing failed: ${parseErr.message}. Output was: ${response.text?.substring(0,100)}...`);
+      }
+    } catch (error: any) {
       console.error(error);
-      setErrorMsg("Error creating diagnostics.");
+      setErrorMsg(`Error creating diagnostics: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
