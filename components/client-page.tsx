@@ -177,7 +177,7 @@ Retorne apenas este formato JSON (valido):
 }`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-3-flash-preview',
         contents: prompt,
         config: {
           responseMimeType: "application/json"
@@ -235,7 +235,7 @@ Retorne EXATAMENTE este JSON:
 }`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-3-flash-preview',
         contents: prompt,
         config: {
           responseMimeType: "application/json"
