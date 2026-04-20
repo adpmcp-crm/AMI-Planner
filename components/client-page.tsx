@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { Loader2, TrendingUp, DollarSign, Download, PlayCircle, Home, Instagram, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { translations, Language } from '@/lib/translations';
 import { PartnersSection } from '@/components/Partners';
 
-// Remove top level instantiation
-// const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+// Top level AI instantiation removed. API is dynamically imported inside the handlers to avoid Vercel client-side crashes on initial load if the environment or SDK throws an error.
 
 type Tab = 'home' | 'about' | 'budget' | 'growth' | 'start';
 type FocusType = 'media' | 'sound';
@@ -147,6 +145,7 @@ export function ClientPage() {
       if (!apiKey) {
         throw new Error("API Key is missing. Please set NEXT_PUBLIC_GEMINI_API_KEY.");
       }
+      const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `Você é um planejador e consultor especialista em Mídia e Audiovisual para Igrejas (AMI Planner).
@@ -208,6 +207,7 @@ Retorne apenas este formato JSON (valido):
       if (!apiKey) {
         throw new Error("API Key is missing. Please set NEXT_PUBLIC_GEMINI_API_KEY.");
       }
+      const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `Atue como Especialista de Crescimento Digital para Igrejas (AMI Manager). Você precisa analisar de forma consultiva a estratégia para o link social: ${socialLink}. Crie soluções reais. IDIOMA DA RESPOSTA: ${lang.toUpperCase()}.
